@@ -1,3 +1,13 @@
 from django.contrib import admin
+from graphs.models import CovidCasesCountry, CovidCasesDaily
 
-# Register your models here.
+@admin.register(CovidCasesCountry)
+class CovidCasesCountryAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+    )
+@admin.register(CovidCasesDaily)
+class CovidCasesDailyAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+    )
