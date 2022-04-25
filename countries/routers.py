@@ -4,4 +4,4 @@ from countries.views import CountriesViewSet
 
 router = routers.DefaultRouter(trailing_slash=False)
 
-router.register(r'countries', CountriesViewSet)
+router.register(r'', CountriesViewSet)
