@@ -1,1 +1,1 @@
-web: gunicorn bddprueba.wsgi --log-file -
+web: gunicorn bddprueba.wsgi --log-file
