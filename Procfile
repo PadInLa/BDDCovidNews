@@ -1,1 +1,3 @@
-web: gunicorn bddprueba.wsgi --log-file
+web: gunicorn bddprueba.wsgi:application --log-file - --log-level debug
+python manage.py collectstatic --noinput
+manage.py migrate
