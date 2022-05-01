@@ -1,0 +1,1 @@
+web: gunicorn bddprueba.wsgi --log-file -
