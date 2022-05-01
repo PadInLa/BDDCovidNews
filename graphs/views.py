@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import ExtractMonth
 from graphs.models import CovidCasesCountry, CovidCasesDaily
-from graphs.serializers import CovidCasesCountrySerializer, CovidCasesDailyMonthlySerializer, CovidCasesDailySerializer
+from graphs.serializers import CovidCasesCountryCurrentSerializer, CovidCasesCountryHundredSerializer, CovidCasesCountryNewSerializer, CovidCasesCountrySerializer, CovidCasesDailyMonthlySerializer, CovidCasesDailyNewMonthlySerializer, CovidCasesDailyPerHundredMonthlySerializer, CovidCasesDailySerializer
 
 
 class GraphViewSet(viewsets.ModelViewSet):
@@ -38,13 +38,53 @@ class GraphViewSet(viewsets.ModelViewSet):
             month=ExtractMonth('date')
         ).values('month').annotate(
             total_deaths=Sum('deaths'),
-            total_recovered=Sum('recovered')).values(
-                'month', 'total_deaths', 'total_recovered').order_by('month')
+            total_recovered=Sum('recovered'),
+            total_active=Sum('active'), 
+            total_confirmed=Sum('confirmed')).values(
+                'month', 'total_deaths', 'total_recovered', 'total_active', 'total_confirmed'
+                ).order_by('month')
 
         serializer = CovidCasesDailyMonthlySerializer(queryset, many=True)
         return Response(serializer.data)
 
-    # Este método no es necesario. Si crea otro ViewSet,
+
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path='covid-monthly-newdata',
+        url_name='covid-monthly-newdata'
+    )
+    def covid_monthly_newdata(self, request):
+        queryset = CovidCasesDaily.objects.all().annotate(
+            month=ExtractMonth('date')
+        ).values('month').annotate(
+            new_cases=Sum('new_cases'),
+            new_deaths=Sum('new_deaths'),
+            new_recovered=Sum('new_recovered')).values(
+                'month', 'new_cases', 'new_deaths', 'new_recovered').order_by('month')
+
+        serializer = CovidCasesDailyNewMonthlySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path='covid-monthly-perhundred',
+        url_name='covid-monthly-perhundred'
+    )
+    def covid_monthly_perhundred(self, request):
+        queryset = CovidCasesDaily.objects.all().annotate(
+            month=ExtractMonth('date')
+        ).values('month').annotate(
+            deaths_100cases=Sum('deaths_100cases'),
+            recovered_100cases=Sum('recovered_100cases'),
+            deaths_100recovered=Sum('deaths_100recovered')).values(
+                'month', 'deaths_100cases', 'recovered_100cases', 'deaths_100recovered').order_by('month')
+
+        serializer = CovidCasesDailyPerHundredMonthlySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    # Este método no es necesario. Si se crea otro ViewSet,
     # se generan todos los métodos por defecto.
     # ¿Para qué instalamos DRF (Django Rest Framework)
     # si va a volver a hacer lo que la librería ya hace?
@@ -53,10 +93,54 @@ class GraphViewSet(viewsets.ModelViewSet):
     @action(
         methods=['GET'],
         detail=False,
-        url_path='covid-cases-country',
-        url_name='covid-cases-country'
+        url_path='covid-region-info',
+        url_name='covid-region-info'
     )
-    def covid_cases_country(self, request):
-        queryset1 = CovidCasesCountry.objects.all()
-        serializer = CovidCasesCountrySerializer(queryset1, many=True)
+    def covid_region_info(self, request):
+        queryset1 = CovidCasesCountry.objects.values(
+            'region'
+            ).annotate(
+                region_deaths=Sum('deaths'),
+                region_recovered=Sum('recovered'),
+                region_confirmed=Sum('confirmed'),
+                region_active = Sum('active')
+            ).order_by('region').values(
+                'region', 'region_deaths', 'region_recovered', 'region_confirmed', 'region_active').order_by('region')
+        serializer = CovidCasesCountryCurrentSerializer(queryset1, many=True)
+        return Response(serializer.data)
+
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path='covid-region-newdata',
+        url_name='covid-region-newdata'
+    )
+    def covid_region_newdata(self, request):
+        queryset1 = CovidCasesCountry.objects.values(
+            'region'
+            ).annotate(
+                new_cases=Sum('new_cases'),
+                new_deaths=Sum('new_deaths'),
+                new_recovered=Sum('new_recovered')
+            ).order_by('region').values(
+                'region', 'new_cases', 'new_deaths', 'new_recovered').order_by('region')
+        serializer = CovidCasesCountryNewSerializer(queryset1, many=True)
+        return Response(serializer.data)
+
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path='covid-region-perhundred',
+        url_name='covid-region-perhundred'
+    )
+    def covid_region_perhundred(self, request):
+        queryset1 = CovidCasesCountry.objects.values(
+            'region'
+            ).annotate(
+                deaths_100cases=Sum('deaths_100cases'),
+                recovered_100cases=Sum('recovered_100cases'),
+                deaths_100recovered=Sum('deaths_100recovered')
+            ).order_by('region').values(
+                'region', 'deaths_100cases', 'recovered_100cases', 'deaths_100recovered').order_by('region')
+        serializer = CovidCasesCountryHundredSerializer(queryset1, many=True)
         return Response(serializer.data)
