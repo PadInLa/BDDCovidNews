@@ -1,7 +1,8 @@
-from django.urls import path
+from django.urls import re_path, include
 
-from . import views
+from .routers import router
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    re_path(r'', include(router.urls)),
+
 ]
