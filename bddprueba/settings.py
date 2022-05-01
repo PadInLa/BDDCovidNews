@@ -111,7 +111,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost',
+    # 'http://localhost',
+    # Tocaba agregarle el :3000 porque es el
+    # puerto que se usa para el frontend ;)
+    'http://localhost:3000',
 ]
 CORS_ALLOW_CREDENTIALS = True
 
