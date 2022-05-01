@@ -124,6 +124,7 @@ CORS_ORIGIN_WHITELIST = [
     # Tocaba agregarle el :3000 porque es el
     # puerto que se usa para el frontend ;)
     'http://localhost:3000',
+    'https://covid-news.vercel.app'
 ]
 CORS_ALLOW_CREDENTIALS = True
 
