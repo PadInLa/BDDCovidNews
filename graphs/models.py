@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class CovidCasesCountry(models.Model):
     country_region = models.CharField(max_length=100)
     confirmed = models.IntegerField()
@@ -16,6 +17,7 @@ class CovidCasesCountry(models.Model):
     oneweek_change = models.IntegerField()
     oneweek_percincrease = models.FloatField()
     region = models.CharField(max_length=100)
+
 
 class CovidCasesDaily(models.Model):
     date = models.DateField()
